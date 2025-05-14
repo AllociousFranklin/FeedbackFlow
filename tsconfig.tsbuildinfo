@@ -1,0 +1,1 @@
+{"root":["./src/app.tsx","./src/firebase.ts","./src/main.tsx","./src/vite-env.d.ts","./src/components/navbar.tsx","./src/pages/createevent.tsx","./src/pages/dashboard.tsx","./src/pages/eventdetails.tsx","./src/pages/feedbackform.tsx","./src/pages/home.tsx","./src/utils/helpers.ts","./src/utils/sendfeedback.ts","./src/utils/storage.ts"],"version":"5.8.3"}
