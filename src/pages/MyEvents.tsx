@@ -11,13 +11,13 @@ const MyEvents = () => {
   const navigate = useNavigate();
 
   useEffect(() => {
-    const user = auth.currentUser;
-    if (!user) {
-      navigate('/login'); // 🔒 redirect if not logged in
-      return;
-    }
-
     const fetchEvents = async () => {
+      const user = auth.currentUser;
+      if (!user) {
+        navigate('/login');
+        return;
+      }
+
       const q = query(collection(db, 'events'), where('userId', '==', user.uid));
       const snapshot = await getDocs(q);
       const userEvents = snapshot.docs.map(doc => ({ id: doc.id, ...doc.data() } as Event));
