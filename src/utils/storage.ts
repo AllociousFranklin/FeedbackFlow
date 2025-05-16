@@ -1,6 +1,4 @@
-// src/utils/storage.ts
-
-import { db } from '../firebase';
+import { db, auth } from '../firebase'; // ✅ include auth
 import {
   collection,
   addDoc,
@@ -18,6 +16,7 @@ export interface Event {
   description: string;
   date: string;
   createdAt: string;
+  userId?: string; // ✅ add this
 }
 
 export interface Feedback {
@@ -33,10 +32,15 @@ export interface Feedback {
 // -----------------------------
 
 export const saveEvent = async (event: Omit<Event, 'id'>): Promise<string> => {
+  const user = auth.currentUser;
+  if (!user) throw new Error('User not authenticated'); // ✅ ensure user is logged in
+
   const docRef = await addDoc(collection(db, 'events'), {
     ...event,
+    userId: user.uid, // ✅ attach userId to event
     createdAt: new Date().toISOString(),
   });
+
   return docRef.id;
 };
 
