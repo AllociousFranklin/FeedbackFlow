@@ -66,7 +66,8 @@ const EventDetails = () => {
       toast.error('Invalid event ID');
       return;
     }
-    const qrUrl = `https://feedbackflow-kbixj.web.app/event/${id}`;
+    // Changed to /feedback/ route here
+    const qrUrl = `https://feedbackflow-kbixj.web.app/feedback/${id}`;
     navigator.clipboard.writeText(qrUrl);
     toast.success('Feedback link copied to clipboard!');
   };
@@ -109,7 +110,8 @@ const EventDetails = () => {
             {id && (
               <QRCodeSVG
                 id="qr-code-svg"
-                value={`https://feedbackflow-kbixj.web.app/event/${id}`}
+                // Changed to /feedback/ route here
+                value={`https://feedbackflow-kbixj.web.app/feedback/${id}`}
                 size={200}
                 bgColor="#FFFFFF"
                 fgColor="#000000"
