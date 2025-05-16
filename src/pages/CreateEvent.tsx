@@ -3,7 +3,6 @@ import { useNavigate } from 'react-router-dom';
 import { Calendar } from 'lucide-react';
 import toast from 'react-hot-toast';
 import { saveEvent } from '../utils/storage';
-import { generateId } from '../utils/helpers';
 
 const CreateEvent = () => {
   const navigate = useNavigate();
@@ -18,36 +17,36 @@ const CreateEvent = () => {
     setFormData(prev => ({ ...prev, [name]: value }));
   };
 
-  const handleSubmit = (e: React.FormEvent) => {
+  const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
-    
+
     // Validation
     if (!formData.title.trim() || !formData.description.trim() || !formData.date) {
       toast.error('Please fill all required fields');
       return;
     }
-    
-    // Create new event
+
     const newEvent = {
-      id: generateId(),
       title: formData.title,
       description: formData.description,
       date: formData.date,
       createdAt: new Date().toISOString()
     };
-    
-    // Save to localStorage
-    saveEvent(newEvent);
-    
-    // Notify and redirect
-    toast.success('Event created successfully!');
-    navigate(`/event/${newEvent.id}`);
+
+    try {
+      const eventId = await saveEvent(newEvent); // ✅ Save to Firestore
+      toast.success('Event created successfully!');
+      navigate(`/event/${eventId}`); // ✅ Redirect using Firebase ID
+    } catch (error) {
+      console.error('Error saving event:', error);
+      toast.error('Failed to create event. Please try again.');
+    }
   };
 
   return (
     <div className="max-w-2xl mx-auto">
       <h1 className="text-3xl font-bold mb-8">Create New Event</h1>
-      
+
       <div className="bg-white dark:bg-gray-800 rounded-xl shadow-md p-8">
         <form onSubmit={handleSubmit}>
           <div className="mb-6">
@@ -65,7 +64,7 @@ const CreateEvent = () => {
               required
             />
           </div>
-          
+
           <div className="mb-6">
             <label htmlFor="date" className="block text-sm font-medium mb-2">
               Event Date
@@ -85,7 +84,7 @@ const CreateEvent = () => {
               />
             </div>
           </div>
-          
+
           <div className="mb-8">
             <label htmlFor="description" className="block text-sm font-medium mb-2">
               Event Description
@@ -101,7 +100,7 @@ const CreateEvent = () => {
               required
             />
           </div>
-          
+
           <div className="flex justify-end">
             <button
               type="submit"
