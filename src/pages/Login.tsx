@@ -85,4 +85,12 @@ const Login = () => {
   );
 };
 
+<p className="text-sm mt-4 text-gray-600">
+  Don't have an account?{' '}
+  <Link to="/register" className="text-indigo-600 hover:underline">
+    Register here
+  </Link>
+</p>
+
+
 export default Login;

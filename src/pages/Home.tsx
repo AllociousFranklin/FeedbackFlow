@@ -3,19 +3,23 @@ import { Link } from 'react-router-dom';
 import { ChartBar, Clock, QrCode, ShieldCheck } from 'lucide-react';
 import { getEvents, Event } from '../utils/storage';
 import { formatDate } from '../utils/helpers';
+import { auth } from '../firebase';
 
 const Home = () => {
   const [events, setEvents] = useState<Event[]>([]);
 
   useEffect(() => {
     const fetchEvents = async () => {
+      const user = auth.currentUser;
+      if (!user) return; // Not logged in — don't show events
+
       const allEvents = await getEvents();
-      setEvents(allEvents);
+      const userEvents = allEvents.filter(e => e.userId === user.uid); // show only user's events
+      setEvents(userEvents);
     };
-  
+
     fetchEvents();
   }, []);
-  
 
   return (
     <div className="max-w-6xl mx-auto">
@@ -27,7 +31,7 @@ const Home = () => {
           Collect anonymous feedback instantly through QR codes at your events.
           Simple, real-time, and insightful.
         </p>
-        
+
         <div className="flex justify-center">
           <Link
             to="/create"
@@ -48,7 +52,7 @@ const Home = () => {
             Generate unique QR codes for each event that attendees can scan to provide instant feedback.
           </p>
         </div>
-        
+
         <div className="flex flex-col items-center text-center">
           <div className="bg-indigo-100 dark:bg-indigo-900/30 p-4 rounded-xl mb-4">
             <Clock size={32} className="text-indigo-600 dark:text-indigo-400" />
@@ -58,7 +62,7 @@ const Home = () => {
             See feedback as it arrives in your dashboard. No waiting or manual collection needed.
           </p>
         </div>
-        
+
         <div className="flex flex-col items-center text-center">
           <div className="bg-indigo-100 dark:bg-indigo-900/30 p-4 rounded-xl mb-4">
             <ShieldCheck size={32} className="text-indigo-600 dark:text-indigo-400" />
@@ -68,7 +72,7 @@ const Home = () => {
             Attendees feel secure sharing honest opinions with our anonymous feedback system.
           </p>
         </div>
-        
+
         <div className="flex flex-col items-center text-center">
           <div className="bg-indigo-100 dark:bg-indigo-900/30 p-4 rounded-xl mb-4">
             <ChartBar size={32} className="text-indigo-600 dark:text-indigo-400" />

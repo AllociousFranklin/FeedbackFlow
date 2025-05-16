@@ -8,9 +8,10 @@ import EventDetails from './pages/EventDetails';
 import FeedbackForm from './pages/FeedbackForm';
 import Dashboard from './pages/Dashboard';
 import Login from './pages/Login';
+import Register from './pages/Register'; // ✅ Import Register page
 import MyEvents from './pages/MyEvents';
 import AuthStatus from './components/AuthStatus';
-import ProtectedRoute from './components/ProtectedRoute'; // <-- Add this import
+import ProtectedRoute from './components/ProtectedRoute';
 import './index.css';
 
 function App() {
@@ -37,6 +38,8 @@ function App() {
         <div className="container mx-auto px-4 py-8">
           <Routes>
             <Route path="/" element={<Home />} />
+            <Route path="/login" element={<Login />} />
+            <Route path="/register" element={<Register />} /> {/* ✅ New route */}
 
             {/* Protected Routes */}
             <Route
@@ -47,8 +50,6 @@ function App() {
                 </ProtectedRoute>
               }
             />
-            <Route path="/event/:id" element={<EventDetails />} />
-            <Route path="/feedback/:id" element={<FeedbackForm />} />
             <Route
               path="/dashboard/:id"
               element={
@@ -57,7 +58,6 @@ function App() {
                 </ProtectedRoute>
               }
             />
-            <Route path="/login" element={<Login />} />
             <Route
               path="/my-events"
               element={
@@ -66,6 +66,10 @@ function App() {
                 </ProtectedRoute>
               }
             />
+
+            {/* Public Routes */}
+            <Route path="/event/:id" element={<EventDetails />} />
+            <Route path="/feedback/:id" element={<FeedbackForm />} />
           </Routes>
         </div>
         <Toaster position="bottom-right" />
