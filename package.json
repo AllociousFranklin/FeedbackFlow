@@ -20,7 +20,6 @@
     "recharts": "^2.15.3"
   },
   "devDependencies": {
-    "@getmocha/vite-plugins": "latest",
     "@types/react": "^18.3.6",
     "@types/react-dom": "^18.3.0",
     "@vitejs/plugin-react": "^4.3.1",
