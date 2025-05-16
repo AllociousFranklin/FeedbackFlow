@@ -62,7 +62,10 @@ const EventDetails = () => {
   };
 
   const copyFeedbackLink = () => {
-    if (!id) return;
+    if (!id) {
+      toast.error('Invalid event ID');
+      return;
+    }
     const qrUrl = `https://feedbackflow-kbixj.web.app/event/${id}`;
     navigator.clipboard.writeText(qrUrl);
     toast.success('Feedback link copied to clipboard!');
@@ -92,9 +95,7 @@ const EventDetails = () => {
       <div className="grid grid-cols-1 md:grid-cols-2 gap-8 mb-8">
         <div className="bg-white dark:bg-gray-800 rounded-xl shadow-md p-6">
           <h2 className="text-xl font-semibold mb-4">Event Details</h2>
-          <p className="text-gray-600 dark:text-gray-300 mb-4">
-            {event.description}
-          </p>
+          <p className="text-gray-600 dark:text-gray-300 mb-4">{event.description}</p>
           <div className="text-sm text-gray-500 dark:text-gray-400">
             <p>Date: {formatDate(event.date)}</p>
             <p>Created: {formatDate(event.createdAt)}</p>
@@ -148,9 +149,7 @@ const EventDetails = () => {
           {feedback.length > 0 ? (
             <div>
               <p className="text-2xl font-bold">{feedback.length}</p>
-              <p className="text-gray-600 dark:text-gray-300">
-                responses collected
-              </p>
+              <p className="text-gray-600 dark:text-gray-300">responses collected</p>
             </div>
           ) : (
             <p className="text-gray-600 dark:text-gray-300">
