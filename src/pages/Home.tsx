@@ -8,8 +8,14 @@ const Home = () => {
   const [events, setEvents] = useState<Event[]>([]);
 
   useEffect(() => {
-    setEvents(getEvents());
+    const fetchEvents = async () => {
+      const allEvents = await getEvents();
+      setEvents(allEvents);
+    };
+  
+    fetchEvents();
   }, []);
+  
 
   return (
     <div className="max-w-6xl mx-auto">

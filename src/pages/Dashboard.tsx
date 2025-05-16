@@ -19,20 +19,22 @@ const Dashboard = () => {
   });
 
   useEffect(() => {
-    if (id) {
-      const foundEvent = getEvent(id);
+    const loadData = async () => {
+      const foundEvent = await getEvent(id || '');
       if (foundEvent) {
         setEvent(foundEvent);
-        const eventFeedback = getEventFeedback(id);
+
+        const eventFeedback = await getEventFeedback(id || '');
         setFeedback(eventFeedback);
-        
-        // Calculate stats
-        const ratings = eventFeedback.map(f => f.rating);
+
+        const ratings = eventFeedback.map((f: Feedback) => f.rating);
         setStats(getRatingStats(ratings));
       } else {
         toast.error('Event not found');
       }
-    }
+    };
+
+    loadData();
   }, [id]);
 
   if (!event) {
@@ -43,7 +45,6 @@ const Dashboard = () => {
     );
   }
 
-  // Prepare chart data
   const distributionData = stats.distribution.map((count, index) => ({
     rating: (index + 1).toString(),
     count
@@ -68,7 +69,7 @@ const Dashboard = () => {
       <div className="flex justify-between items-center mb-8">
         <h1 className="text-3xl font-bold">{event.title} - Feedback Dashboard</h1>
       </div>
-      
+
       <div className="grid grid-cols-1 md:grid-cols-3 gap-6 mb-8">
         <div className="bg-white dark:bg-gray-800 rounded-xl shadow-md p-6 flex items-center">
           <div className="bg-blue-100 dark:bg-blue-900/30 p-3 rounded-lg mr-4">
@@ -79,7 +80,7 @@ const Dashboard = () => {
             <p className="text-2xl font-bold">{feedback.length}</p>
           </div>
         </div>
-        
+
         <div className="bg-white dark:bg-gray-800 rounded-xl shadow-md p-6 flex items-center">
           <div className="bg-yellow-100 dark:bg-yellow-900/30 p-3 rounded-lg mr-4">
             <Star size={24} className="text-yellow-600 dark:text-yellow-400" />
@@ -91,13 +92,13 @@ const Dashboard = () => {
             </p>
           </div>
         </div>
-        
+
         <div className="bg-white dark:bg-gray-800 rounded-xl shadow-md p-6">
           <p className="text-sm text-gray-500 dark:text-gray-400 mb-2">Event Date</p>
           <p className="text-lg font-medium">{formatDate(event.date)}</p>
         </div>
       </div>
-      
+
       {feedback.length > 0 ? (
         <>
           <div className="grid grid-cols-1 md:grid-cols-2 gap-8 mb-8">
@@ -118,7 +119,7 @@ const Dashboard = () => {
                 </ResponsiveContainer>
               </div>
             </div>
-            
+
             <div className="bg-white dark:bg-gray-800 rounded-xl shadow-md p-6">
               <h2 className="text-xl font-semibold mb-4">Ratings Breakdown</h2>
               <div className="h-64">
@@ -146,12 +147,13 @@ const Dashboard = () => {
               </div>
             </div>
           </div>
-          
+
           <div className="bg-white dark:bg-gray-800 rounded-xl shadow-md p-6 mb-8">
             <h2 className="text-xl font-semibold mb-4">Recent Comments</h2>
             <div className="space-y-4">
               {feedback.filter(f => f.comment.trim() !== '').length > 0 ? (
-                feedback.filter(f => f.comment.trim() !== '')
+                feedback
+                  .filter(f => f.comment.trim() !== '')
                   .sort((a, b) => new Date(b.createdAt).getTime() - new Date(a.createdAt).getTime())
                   .map(item => (
                     <div key={item.id} className="p-4 border border-gray-100 dark:border-gray-700 rounded-lg">

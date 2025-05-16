@@ -10,23 +10,21 @@ const EventDetails = () => {
   const { id } = useParams<{ id: string }>();
   const [event, setEvent] = useState<Event | null>(null);
   const [feedback, setFeedback] = useState<Feedback[]>([]);
-  const [qrUrl, setQrUrl] = useState('');
+  const [qrUrl] = useState('');
+
 
   useEffect(() => {
-    if (id) {
-      const foundEvent = getEvent(id);
-      if (foundEvent) {
-        setEvent(foundEvent);
-        setFeedback(getEventFeedback(id));
-        
-        // Generate feedback URL
-        const baseUrl = window.location.origin;
-        setQrUrl(`${baseUrl}/feedback/${id}`);
-      } else {
-        toast.error('Event not found');
-      }
-    }
+    const loadEvent = async () => {
+      const foundEvent = await getEvent(id || '');
+      setEvent(foundEvent);
+  
+      const eventFb = await getEventFeedback(id || '');
+      setFeedback(eventFb);
+    };
+  
+    loadEvent();
   }, [id]);
+  
 
   const downloadQRCode = () => {
     const canvas = document.getElementById('qr-code-canvas');

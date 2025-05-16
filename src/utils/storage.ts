@@ -1,6 +1,19 @@
+// src/utils/storage.ts
+
+import { db } from '../firebase';
+import {
+  collection,
+  addDoc,
+  getDoc,
+  getDocs,
+  doc,
+  query,
+  where
+} from 'firebase/firestore';
+
 // Types
 export interface Event {
-  id: string;
+  id?: string;
   title: string;
   description: string;
   date: string;
@@ -8,43 +21,55 @@ export interface Event {
 }
 
 export interface Feedback {
-  id: string;
+  id?: string;
   eventId: string;
   rating: number;
   comment: string;
   createdAt: string;
 }
 
+// -----------------------------
 // Events
-export const getEvents = (): Event[] => {
-  const events = localStorage.getItem('events');
-  return events ? JSON.parse(events) : [];
+// -----------------------------
+
+export const saveEvent = async (event: Omit<Event, 'id'>): Promise<string> => {
+  const docRef = await addDoc(collection(db, 'events'), {
+    ...event,
+    createdAt: new Date().toISOString(),
+  });
+  return docRef.id;
 };
 
-export const saveEvent = (event: Event): void => {
-  const events = getEvents();
-  events.push(event);
-  localStorage.setItem('events', JSON.stringify(events));
+export const getEvent = async (id: string): Promise<Event | null> => {
+  const docRefRef = doc(db, 'events', id);
+  const docSnap = await getDoc(docRefRef);
+  return docSnap.exists() ? { id: docSnap.id, ...docSnap.data() } as Event : null;
 };
 
-export const getEvent = (id: string): Event | undefined => {
-  const events = getEvents();
-  return events.find(event => event.id === id);
+export const getEvents = async (): Promise<Event[]> => {
+  const snapshot = await getDocs(collection(db, 'events'));
+  return snapshot.docs.map(doc => ({ id: doc.id, ...doc.data() } as Event));
 };
 
+// -----------------------------
 // Feedback
-export const getFeedback = (): Feedback[] => {
-  const feedback = localStorage.getItem('feedback');
-  return feedback ? JSON.parse(feedback) : [];
+// -----------------------------
+
+export const saveFeedback = async (feedback: Omit<Feedback, 'id'>): Promise<string> => {
+  const docRef = await addDoc(collection(db, 'feedback'), {
+    ...feedback,
+    createdAt: new Date().toISOString(),
+  });
+  return docRef.id;
 };
 
-export const saveFeedback = (feedback: Feedback): void => {
-  const feedbackItems = getFeedback();
-  feedbackItems.push(feedback);
-  localStorage.setItem('feedback', JSON.stringify(feedbackItems));
+export const getFeedback = async (): Promise<Feedback[]> => {
+  const snapshot = await getDocs(collection(db, 'feedback'));
+  return snapshot.docs.map(doc => ({ id: doc.id, ...doc.data() } as Feedback));
 };
 
-export const getEventFeedback = (eventId: string): Feedback[] => {
-  const feedback = getFeedback();
-  return feedback.filter(item => item.eventId === eventId);
+export const getEventFeedback = async (eventId: string): Promise<Feedback[]> => {
+  const q = query(collection(db, 'feedback'), where('eventId', '==', eventId));
+  const snapshot = await getDocs(q);
+  return snapshot.docs.map(doc => ({ id: doc.id, ...doc.data() } as Feedback));
 };
