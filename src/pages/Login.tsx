@@ -1,5 +1,5 @@
 import { useEffect, useState } from 'react';
-import { useNavigate } from 'react-router-dom';
+import { useNavigate, Link } from 'react-router-dom'; // Import Link here
 import { auth } from '../firebase';
 import {
   GoogleAuthProvider,
@@ -8,7 +8,6 @@ import {
   onAuthStateChanged,
 } from 'firebase/auth';
 import toast from 'react-hot-toast';
-import { Link } from 'react-router-dom';
 
 const Login = () => {
   const navigate = useNavigate();
@@ -82,16 +81,15 @@ const Login = () => {
           Sign in with Email
         </button>
       </form>
+
+      <p className="text-sm mt-4 text-gray-600">
+        Don't have an account?{' '}
+        <Link to="/register" className="text-indigo-600 hover:underline">
+          Register here
+        </Link>
+      </p>
     </div>
   );
 };
-
-<p className="text-sm mt-4 text-gray-600">
-  Don't have an account?{' '}
-  <Link to="/register" className="text-indigo-600 hover:underline">
-    Register here
-  </Link>
-</p>
-
 
 export default Login;
