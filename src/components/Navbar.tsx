@@ -1,22 +1,9 @@
-import { Link, useNavigate } from 'react-router-dom';
+import { Link } from 'react-router-dom';
 import { MessageSquare } from 'lucide-react';
-import { useEffect, useState } from 'react';
-import { auth } from '../firebase';
-import { onAuthStateChanged, signOut } from 'firebase/auth';
+import { useAuth } from '../context/AuthContext';
 
 const Navbar = () => {
-  const [user, setUser] = useState<any>(null);
-  const navigate = useNavigate();
-
-  useEffect(() => {
-    const unsubscribe = onAuthStateChanged(auth, setUser);
-    return () => unsubscribe();
-  }, []);
-
-  const handleLogout = async () => {
-    await signOut(auth);
-    navigate('/login');
-  };
+  const { user } = useAuth();
 
   return (
     <nav className="bg-white/80 dark:bg-gray-800/80 backdrop-blur-md shadow-sm sticky top-0 z-10">
@@ -31,39 +18,29 @@ const Navbar = () => {
             </span>
           </Link>
 
-          <div className="flex space-x-4 items-center">
-            {user && (
+          <div className="flex space-x-4">
+            {user ? (
               <>
                 <Link
                   to="/my-events"
-                  className="text-sm text-gray-700 dark:text-gray-300 hover:underline"
+                  className="px-4 py-2 rounded-lg text-indigo-600 dark:text-indigo-400 font-medium hover:underline"
                 >
                   My Events
                 </Link>
+                <Link
+                  to="/create"
+                  className="px-4 py-2 rounded-lg bg-indigo-600 text-white font-medium hover:bg-indigo-700 transition"
+                >
+                  Create Event
+                </Link>
               </>
-            )}
-
-            <Link
-              to="/create"
-              className="px-4 py-2 rounded-lg bg-indigo-600 text-white font-medium hover:bg-indigo-700 transition"
-            >
-              Create Event
-            </Link>
-
-            {!user ? (
+            ) : (
               <Link
                 to="/login"
-                className="text-sm text-indigo-600 font-medium hover:underline"
+                className="px-4 py-2 rounded-lg bg-indigo-600 text-white font-medium hover:bg-indigo-700 transition"
               >
                 Login
               </Link>
-            ) : (
-              <button
-                onClick={handleLogout}
-                className="text-sm text-red-500 font-medium hover:underline"
-              >
-                Logout
-              </button>
             )}
           </div>
         </div>

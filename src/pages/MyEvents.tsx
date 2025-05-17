@@ -2,30 +2,32 @@ import { useEffect, useState } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
 import { Event } from '../utils/storage';
 import { formatDate } from '../utils/helpers';
-import { auth } from '../firebase';
 import { collection, getDocs, query, where } from 'firebase/firestore';
 import { db } from '../firebase';
+import { useAuth } from '../context/AuthContext';
 
 const MyEvents = () => {
   const [events, setEvents] = useState<Event[]>([]);
   const navigate = useNavigate();
+  const { user } = useAuth();
 
   useEffect(() => {
-    const fetchEvents = async () => {
-      const user = auth.currentUser;
-      if (!user) {
-        navigate('/login');
-        return;
-      }
+    if (!user) {
+      navigate('/login');
+      return;
+    }
 
+    const fetchEvents = async () => {
       const q = query(collection(db, 'events'), where('userId', '==', user.uid));
       const snapshot = await getDocs(q);
-      const userEvents = snapshot.docs.map(doc => ({ id: doc.id, ...doc.data() } as Event));
+      const userEvents = snapshot.docs.map(
+        (doc) => ({ id: doc.id, ...doc.data() } as Event)
+      );
       setEvents(userEvents);
     };
 
     fetchEvents();
-  }, [navigate]);
+  }, [navigate, user]);
 
   return (
     <div className="max-w-4xl mx-auto mt-10">
@@ -35,7 +37,7 @@ const MyEvents = () => {
         <p className="text-gray-600">You haven't created any events yet.</p>
       ) : (
         <div className="space-y-4">
-          {events.map(event => (
+          {events.map((event) => (
             <div
               key={event.id}
               className="p-4 bg-white dark:bg-gray-800 rounded-xl shadow border border-gray-200 dark:border-gray-700"
